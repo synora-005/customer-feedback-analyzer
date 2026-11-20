@@ -13,9 +13,13 @@ from app.core import (
     dataset_stats,
     encode_example,
     encode_prompt,
+    label_accuracy,
     label_token,
     load_feedback,
+    pad_batch,
+    save_classifier,
     split_dataset,
+    train_classifier,
 )
 
 DATASET = Path(__file__).parent.parent / "dataset" / "feedback.csv"
@@ -162,9 +166,48 @@ def test_milestone_2_encoding(tokenizer):
 
 
 # Milestone 3: Fine-tune the model using the Hugging Face Trainer.
-@pytest.mark.skip(reason="remove this line when you start milestone 3")
-def test_milestone_3():
-    raise NotImplementedError("write the test for milestone 3")
+def test_milestone_3_padding():
+    batch = pad_batch([
+        {"input_ids": [1, 2, 3], "attention_mask": [1, 1, 1], "labels": [-100, -100, 3]},
+        {"input_ids": [4, 5], "attention_mask": [1, 1], "labels": [-100, 5]},
+    ], pad_id=9)
+    assert batch["input_ids"].tolist() == [[1, 2, 3], [4, 5, 9]]
+    assert batch["attention_mask"].tolist() == [[1, 1, 1], [1, 1, 0]]
+    assert batch["labels"].tolist() == [[-100, -100, 3], [-100, 5, -100]]
+
+
+def test_milestone_3_accuracy():
+    labels = [[-100, -100, 7], [-100, 8, -100]]
+    # the prediction at the position before a label is the one that counts
+    assert label_accuracy([[0, 7, 0], [8, 0, 0]], labels) == 1.0
+    assert label_accuracy([[0, 6, 0], [8, 0, 0]], labels) == 0.5
+    assert label_accuracy([[0, 0]], [[-100, -100]]) == 0.0
+
+
+def test_milestone_3(tokenizer, tmp_path):
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    torch.manual_seed(0)
+    model = tiny_gpt2()                                         # tiny and untrained: fast, no big download
+    add_category_tokens(tokenizer, model)
+    words = {"product_issue": "broken", "staff_praise": "friendly", "staff_complaint": "rude",
+             "pricing": "expensive", "store_experience": "crowded"}
+    examples = [{"comment": f"so {words[label]} today {i}", "label": label}
+                for i in range(8) for label in CATEGORIES]
+    train, val = examples[:30], examples[30:]
+
+    history = train_classifier(model, tokenizer, train, val, output_dir=str(tmp_path / "run"),
+                               epochs=12, lr=3e-3, batch_size=10, logging_steps=1)
+    assert history["train_loss"][-1] < history["train_loss"][0]     # it learns
+    assert len(history["eval_accuracy"]) == 12                      # checked on validation every epoch
+
+    # what is saved can be loaded again, new tokens included
+    save_classifier(model, tokenizer, str(tmp_path / "saved"))
+    reloaded = AutoTokenizer.from_pretrained(str(tmp_path / "saved"))
+    assert len(reloaded) == len(tokenizer)
+    assert reloaded.convert_tokens_to_ids("<pricing>") == tokenizer.convert_tokens_to_ids("<pricing>")
+    reloaded_model = AutoModelForCausalLM.from_pretrained(str(tmp_path / "saved"))
+    assert reloaded_model.get_input_embeddings().num_embeddings == len(tokenizer)
 
 
 # Milestone 4: Implement an inference function to classify new feedback.

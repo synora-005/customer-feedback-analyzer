@@ -4,3 +4,4 @@ pytest
 datasets
 transformers
 torch
+accelerate

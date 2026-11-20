@@ -134,9 +134,89 @@ def encode_example(comment, label, tokenizer, max_comment_tokens=60):
 
 # --- Milestone 3: Fine-tune the model using the Hugging Face Trainer.
 # Hint: Utilize the Hugging Face Trainer for fine-tuning your model.
-def milestone_3():  # TODO(milestone 3)
-    raise NotImplementedError("TODO(milestone 3)")
+MODEL_DIR = "data/model"          # saved model; data/ is git-ignored because the model is about 500 MB
 
+
+def make_dataset(examples, tokenizer, max_comment_tokens=60):
+    """Encode every example. A plain list works as a dataset: it has a length and can be indexed."""
+    return [encode_example(e["comment"], e["label"], tokenizer, max_comment_tokens) for e in examples]
+
+
+def pad_batch(features, pad_id):
+    """Make one batch: shorter examples are padded on the right. Padding is ignored by attention and by the loss."""
+    import torch
+    width = max(len(f["input_ids"]) for f in features)
+
+    def pad(key, value):
+        return torch.tensor([f[key] + [value] * (width - len(f[key])) for f in features])
+
+    return {"input_ids": pad("input_ids", pad_id), "attention_mask": pad("attention_mask", 0),
+            "labels": pad("labels", -100)}
+
+
+def label_accuracy(predictions, labels):
+    """Share of label tokens predicted correctly.
+
+    The model's prediction at position i is for position i + 1, so the predictions are shifted
+    by one before comparing. Positions marked -100 are ignored.
+    """
+    import numpy as np
+    predictions, labels = np.asarray(predictions), np.asarray(labels)
+    guessed, wanted = predictions[:, :-1], labels[:, 1:]
+    counted = wanted != -100
+    if not counted.any():
+        return 0.0
+    return float((guessed[counted] == wanted[counted]).mean())
+
+
+def _most_likely_token(logits, labels):
+    """Keep only the best token at each position, so evaluation does not store 50,000 scores per position."""
+    if isinstance(logits, tuple):
+        logits = logits[0]
+    return logits.argmax(dim=-1)
+
+
+def _compute_metrics(eval_prediction):
+    return {"accuracy": label_accuracy(eval_prediction.predictions, eval_prediction.label_ids)}
+
+
+def train_classifier(model, tokenizer, train, val=None, output_dir="data/trainer_tmp",
+                     epochs=5, lr=1e-4, batch_size=8, seed=0, logging_steps=5):
+    """Fine-tune with the Hugging Face Trainer. Returns the loss and accuracy after each log step or epoch."""
+    from functools import partial
+    from transformers import Trainer, TrainingArguments, set_seed
+
+    set_seed(seed)
+    train_data = make_dataset(train, tokenizer)
+    val_data = make_dataset(val, tokenizer) if val else None
+    arguments = TrainingArguments(
+        output_dir=output_dir, num_train_epochs=epochs, learning_rate=lr, weight_decay=0.01,
+        per_device_train_batch_size=batch_size, per_device_eval_batch_size=batch_size,
+        eval_strategy="epoch" if val_data else "no", save_strategy="no",
+        logging_steps=logging_steps, report_to="none", seed=seed,
+        remove_unused_columns=False,                      # our examples are plain dictionaries
+    )
+    trainer = Trainer(
+        model=model, args=arguments, train_dataset=train_data, eval_dataset=val_data,
+        data_collator=partial(pad_batch, pad_id=tokenizer.pad_token_id),
+        compute_metrics=_compute_metrics if val_data else None,
+        preprocess_logits_for_metrics=_most_likely_token if val_data else None,
+    )
+    trainer.train()
+    log = trainer.state.log_history
+    return {
+        "train_loss": [entry["loss"] for entry in log if "loss" in entry],
+        "eval_loss": [entry["eval_loss"] for entry in log if "eval_loss" in entry],
+        "eval_accuracy": [entry["eval_accuracy"] for entry in log if "eval_accuracy" in entry],
+    }
+
+
+def save_classifier(model, tokenizer, path=MODEL_DIR):
+    """Save the model and the tokenizer (with its new tokens) together, so milestone 4 can load both."""
+    from pathlib import Path
+    Path(path).mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(path)
+    tokenizer.save_pretrained(path)
 
 # --- Milestone 4: Implement an inference function to classify new feedback.
 # Hint: Develop an inference pipeline to classify new feedback using your fine-tuned model.
