@@ -319,5 +319,21 @@ def evaluate_classifier(examples, model, tokenizer):
 
 # --- Milestone 5: Build a simple Streamlit app to input comments and show classifications.
 # Hint: Build a simple Streamlit UI to interact with your classification model.
-def milestone_5():  # TODO(milestone 5)
-    raise NotImplementedError("TODO(milestone 5)")
+def model_available(path=MODEL_DIR):
+    """True if a saved model and tokenizer are in this folder (CI and fresh clones don't have one)."""
+    from pathlib import Path
+    folder = Path(path)
+    return (folder / "config.json").exists() and (folder / "tokenizer_config.json").exists()
+
+
+def classify_comments(comments, model, tokenizer):
+    """Classify several comments. Blank ones are skipped.
+
+    Returns a list of {"comment", "label", "confidence", "scores"} dictionaries, one per comment.
+    """
+    results = []
+    for comment in comments:
+        comment = " ".join(comment.split())
+        if comment:
+            results.append({"comment": comment, **predict_label(comment, model, tokenizer)})
+    return results

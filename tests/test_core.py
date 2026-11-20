@@ -10,6 +10,7 @@ import torch
 from app.core import (
     CATEGORIES,
     add_category_tokens,
+    classify_comments,
     dataset_stats,
     encode_example,
     encode_prompt,
@@ -18,6 +19,7 @@ from app.core import (
     label_token,
     load_classifier,
     load_feedback,
+    model_available,
     pad_batch,
     predict_label,
     save_classifier,
@@ -254,6 +256,15 @@ def test_milestone_4(tokenizer, tmp_path):
 
 
 # Milestone 5: Build a simple Streamlit app to input comments and show classifications.
-@pytest.mark.skip(reason="remove this line when you start milestone 5")
-def test_milestone_5():
-    raise NotImplementedError("write the test for milestone 5")
+def test_milestone_5(tokenizer, tmp_path):
+    assert not model_available(str(tmp_path / "nothing"))          # no model yet
+
+    model = tiny_gpt2()
+    add_category_tokens(tokenizer, model)
+    save_classifier(model, tokenizer, str(tmp_path / "saved"))
+    assert model_available(str(tmp_path / "saved"))
+
+    results = classify_comments(["Great  staff!", "", "   ", "Too expensive"], model, tokenizer)
+    assert [r["comment"] for r in results] == ["Great staff!", "Too expensive"]   # blanks skipped, spaces tidied
+    assert all(r["label"] in CATEGORIES for r in results)
+    assert classify_comments([], model, tokenizer) == []
