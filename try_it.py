@@ -1,9 +1,14 @@
-from app.core import dataset_stats, load_feedback, split_dataset
+from app.core import CATEGORIES, add_category_tokens, encode_example, label_token, load_gpt2
 
-examples = load_feedback("dataset/feedback.csv")
-print(dataset_stats(examples))
+tokenizer, model = load_gpt2()
+print("GPT-2 vocabulary:", len(tokenizer), "  parameters:", sum(p.numel() for p in model.parameters()))
 
-train, val, test = split_dataset(examples)
-print("train / validation / test:", len(train), len(val), len(test))
-for example in train[:5]:
-    print(example["label"], "|", example["comment"])
+added = add_category_tokens(tokenizer, model)
+print("tokens added:", added, "  new vocabulary:", len(tokenizer))
+for category in CATEGORIES:
+    print(label_token(category), "-> id", tokenizer.convert_tokens_to_ids(label_token(category)))
+print("embedding table:", tuple(model.get_input_embeddings().weight.shape))
+
+example = encode_example("The cashier was so friendly and made my day.", "staff_praise", tokenizer)
+print(example["input_ids"])
+print(tokenizer.decode(example["input_ids"]))

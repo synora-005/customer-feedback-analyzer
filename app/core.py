@@ -78,8 +78,58 @@ def dataset_stats(examples):
 
 # --- Milestone 2: Extend GPT-2 tokenizer and model with new category tokens.
 # Hint: Apply tokenizer and model extension methods to incorporate new category tokens.
-def milestone_2():  # TODO(milestone 2)
-    raise NotImplementedError("TODO(milestone 2)")
+def label_token(label):
+    """The special token for a category, for example <pricing>."""
+    if label not in CATEGORIES:
+        raise ValueError(f"unknown label {label!r}, expected one of {CATEGORIES}")
+    return f"<{label}>"
+
+
+def load_gpt2(name="gpt2"):
+    """Download (the first time) and load GPT-2. Returns the tokenizer and the model."""
+    from transformers import AutoModelForCausalLM, AutoTokenizer   # imported here because it is slow
+    tokenizer = AutoTokenizer.from_pretrained(name)
+    model = AutoModelForCausalLM.from_pretrained(name)
+    return tokenizer, model
+
+
+def add_category_tokens(tokenizer, model):
+    """Teach the tokenizer and the model the category tokens, plus a padding token.
+
+    Returns how many tokens were new, so doing it twice adds nothing the second time.
+    """
+    added = tokenizer.add_tokens([label_token(label) for label in CATEGORIES], special_tokens=True)
+    if tokenizer.pad_token is None:                # GPT-2 has none, and batches need one
+        added += tokenizer.add_special_tokens({"pad_token": "<pad>"})
+    if model.get_input_embeddings().num_embeddings != len(tokenizer):
+        model.resize_token_embeddings(len(tokenizer))   # one new row of numbers per new token
+    model.config.pad_token_id = tokenizer.pad_token_id
+    return added
+
+
+def encode_prompt(comment, tokenizer, max_comment_tokens=60):
+    """The text the model reads before it answers: 'Comment: ...' then a new line and 'Category:'.
+
+    Long comments are cut to max_comment_tokens. Training and predicting both use this function.
+    """
+    head = tokenizer("Comment:")["input_ids"]
+    body = tokenizer(" " + comment)["input_ids"][:max_comment_tokens]
+    tail = tokenizer("\nCategory:")["input_ids"]
+    return head + body + tail
+
+
+def encode_example(comment, label, tokenizer, max_comment_tokens=60):
+    """One training example: the prompt, then the label token the model should answer with.
+
+    In `labels`, -100 means "ignore this position", so only the label token is learned from.
+    """
+    prompt = encode_prompt(comment, tokenizer, max_comment_tokens)
+    label_id = tokenizer.convert_tokens_to_ids(label_token(label))
+    return {
+        "input_ids": prompt + [label_id],
+        "attention_mask": [1] * (len(prompt) + 1),
+        "labels": [-100] * len(prompt) + [label_id],
+    }
 
 
 # --- Milestone 3: Fine-tune the model using the Hugging Face Trainer.
