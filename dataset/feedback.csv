@@ -1,0 +1,201 @@
+comment,label
+"The zipper on my new jacket broke after two days.",product_issue
+"Bought a blender last week and the lid doesn't fit properly.",product_issue
+"Package was missing the charger, only the phone was inside.",product_issue
+"The colour faded after the very first wash.",product_issue
+"Shoes started falling apart within a month, really poor quality.",product_issue
+"My headphones stopped working on the left side.",product_issue
+"The sweater has a hole near the sleeve, it was sealed in the bag like that.",product_issue
+"Got the wrong size even though the label on the box says medium.",product_issue
+"the screen on this tablet flickers constantly",product_issue
+"The mug arrived cracked and the seal was already open.",product_issue
+"Batteries leaked inside the toy within a week.",product_issue
+"Stitching is coming undone on the bag strap.",product_issue
+"This kettle stops heating halfway through and I have to restart it.",product_issue
+"Smells strongly of chemicals even after airing it out for days.",product_issue
+"The expiry date on the yoghurt I bought was already two days past.",product_issue
+"Product description said waterproof but my rucksack soaked everything.",product_issue
+"The bulb burned out after three uses, such a waste of money.",product_issue
+"One of the chair legs is shorter than the others so it wobbles.",product_issue
+"Jeans shrank so much after washing that they no longer fit.",product_issue
+"Instructions were missing and half the screws were the wrong size.",product_issue
+"The lipstick I bought was melted and had a weird texture.",product_issue
+"Laptop bag zip jams every time I try to close it.",product_issue
+"This printer jams on nearly every page.",product_issue
+"The paint chipped off the toy car right out of the box.",product_issue
+"Cheap plastic, snapped the first time I used it.",product_issue
+"The mattress already has a dip in the middle after two months.",product_issue
+"Bottle leaks in my bag no matter how tight I close the cap.",product_issue
+"Two of the four wine glasses in the set arrived broken.",product_issue
+"The watch strap came off on its own after a week.",product_issue
+"Pillow is lumpy and flat, not what the photos showed at all.",product_issue
+"Bluetooth speaker keeps disconnecting every few minutes.",product_issue
+"Fabric is so thin you can see right through it.",product_issue
+"Got a different colour than the one I ordered.",product_issue
+"The remote doesn't work, batteries fine, just dead.",product_issue
+"Cereal box was half empty when I opened it.",product_issue
+"Straps on the backpack ripped off carrying a few books.",product_issue
+"The frying pan coating is peeling already.",product_issue
+"my phone case cracked the first time I dropped it from desk height",product_issue
+"The towel sheds fluff everywhere and left lint all over my clothes.",product_issue
+"Candle burned unevenly and tunnelled down the middle in just one evening.",product_issue
+"The cashier was so friendly and made my day.",staff_praise
+"Priya at the electronics counter explained everything patiently and never rushed me.",staff_praise
+"Amazing service, the assistant carried my bags to the car.",staff_praise
+"Staff went above and beyond to find the right size for my daughter.",staff_praise
+"Everyone I spoke to was polite and genuinely helpful.",staff_praise
+"The manager personally apologised and sorted my refund in minutes, brilliant.",staff_praise
+"Such a helpful young man in the shoe section, give him a raise!",staff_praise
+"the lady at the bakery remembered my name and my usual order, lovely",staff_praise
+"Great team here, they were happy to help even right at closing time.",staff_praise
+"The sales assistant gave honest advice and even talked me out of the more expensive model.",staff_praise
+"Fitting room staff were kind and brought me three other sizes without me asking.",staff_praise
+"Really appreciated how patiently the staff dealt with my elderly mother.",staff_praise
+"Fantastic customer service from start to finish.",staff_praise
+"The security guard held the door and helped me with my pram, small thing but it mattered.",staff_praise
+"Rahul at the help desk solved my problem faster than I expected.",staff_praise
+"Courteous and well informed staff, they knew the products inside out.",staff_praise
+"The team gift wrapped my present beautifully for free.",staff_praise
+"Thank you to the lovely cashier who noticed I was short of change and helped me out.",staff_praise
+"Staff in the garden section gave me great planting tips.",staff_praise
+"Super quick and cheerful service at the checkout today.",staff_praise
+"The assistant spent twenty minutes helping me pick a birthday present.",staff_praise
+"They called me when my special order arrived, such thoughtful service.",staff_praise
+"Excellent help from the staff, they tracked down the last item in another branch.",staff_praise
+"the guy at the phone counter was patient with me even though i kept asking silly questions",staff_praise
+"Warm welcome at the door and helpful staff throughout.",staff_praise
+"Staff were professional and kind when my child had a little accident in the aisle.",staff_praise
+"I was impressed by how knowledgeable the pharmacist was.",staff_praise
+"The store assistant helped me fix a problem with my app discount on the spot.",staff_praise
+"Lovely people working here, always smiling.",staff_praise
+"A big thank you to Meera for her help with my wedding shopping.",staff_praise
+"Staff offered to carry the heavy box to my car without being asked.",staff_praise
+"Courteous service even though the shop was packed.",staff_praise
+"The team handled my complaint so professionally that I left happy.",staff_praise
+"Friendly staff who actually listen and do not push you to buy.",staff_praise
+"The cashier double checked the offer to make sure I got the best price.",staff_praise
+"Brilliant service at the returns desk, no fuss at all.",staff_praise
+"Very attentive staff, someone always asked if I needed help.",staff_praise
+"The assistant stayed late to help me finish choosing a gift.",staff_praise
+"Everybody was so kind to my grandfather, thank you all.",staff_praise
+"Outstanding service, the team made shopping with a toddler easy.",staff_praise
+"The cashier rolled her eyes when I asked about the return policy.",staff_complaint
+"Nobody at the counter would even look up while I waited.",staff_complaint
+"Staff were rude and dismissive when I asked for help.",staff_complaint
+"I asked three different employees for assistance and none of them knew anything.",staff_complaint
+"The manager refused to listen to my side and just repeated the rules.",staff_complaint
+"Security followed me around the shop like I was a thief.",staff_complaint
+"The assistant was chatting on his phone and ignored me completely.",staff_complaint
+"Terrible attitude from the staff at the returns desk.",staff_complaint
+"i was told to come back later by a really unhelpful employee",staff_complaint
+"Cashier snapped at me for paying with small change.",staff_complaint
+"The sales rep kept pushing the expensive model even after I said my budget.",staff_complaint
+"Staff were gossiping at the entrance and did not greet anyone.",staff_complaint
+"Nobody could tell me where anything was and they seemed annoyed to be asked.",staff_complaint
+"The employee was condescending when I asked a simple question about the warranty.",staff_complaint
+"Rude young man at the electronics counter, I will not come back.",staff_complaint
+"They promised to call me back about my order and never did.",staff_complaint
+"The staff member gave me wrong information and then blamed me for it.",staff_complaint
+"Waited ten minutes while two employees finished their conversation.",staff_complaint
+"Disrespectful behaviour towards an elderly customer in front of me.",staff_complaint
+"The assistant sighed loudly when I asked to see another size.",staff_complaint
+"Customer service on the phone hung up on me twice.",staff_complaint
+"The cashier threw my items into the bag without any care.",staff_complaint
+"Unprofessional staff who argued with each other in front of customers.",staff_complaint
+"When I asked for the manager the staff just shrugged and walked off.",staff_complaint
+"The lady at the fitting rooms was very short with me for no reason.",staff_complaint
+"Asked for help finding baby products and got an eye roll.",staff_complaint
+"Staff made me feel unwelcome the moment I walked in.",staff_complaint
+"The employee insisted I was lying about the faulty item.",staff_complaint
+"No one acknowledged me even though I stood at the till for ages.",staff_complaint
+"A staff member shouted at me because I used the wrong queue.",staff_complaint
+"The guy at the deli counter was incredibly rude about a small mistake.",staff_complaint
+"They refused to help me carry a heavy item even though I was clearly struggling.",staff_complaint
+"Sales assistant ignored me and served people who arrived after me.",staff_complaint
+"The store manager was arrogant and would not apologise.",staff_complaint
+"Employees seemed bored and could not care less about customers.",staff_complaint
+"The cashier was so slow and unfriendly that I almost left my basket.",staff_complaint
+"Staff talked down to me because I did not know much about the product.",staff_complaint
+"I was ignored by every assistant on the floor while trying to find a gift.",staff_complaint
+"Very impolite team, they hardly said a word to me.",staff_complaint
+"The person at the help desk was dismissive and clearly did not want to be there.",staff_complaint
+"Prices here are way higher than at the other stores nearby.",pricing
+"Why did the price of milk go up again, it was cheaper last week.",pricing
+"This jacket costs double what it does online.",pricing
+"The price on the shelf was different from what I was charged at the till.",pricing
+"Great discounts this weekend, I saved a lot.",pricing
+"Too expensive for what you actually get.",pricing
+"Loved the clearance sale, everything was half price.",pricing
+"the delivery fee is ridiculous for such a small order",pricing
+"Prices are fair and the loyalty points are a nice bonus.",pricing
+"I was charged twice for the same item and it took ages to notice.",pricing
+"The offer said buy one get one free but the till did not apply it.",pricing
+"Cheaper than the supermarket for most things which is great.",pricing
+"The sale tag said 30 percent off but the final price did not reflect it.",pricing
+"Everything feels overpriced lately.",pricing
+"Good value for money, especially the own brand range.",pricing
+"Hidden charges at checkout made my total much higher than expected.",pricing
+"Coupons are confusing and half of them are not accepted.",pricing
+"Can you please bring back the student discount.",pricing
+"Fresh vegetables are far too expensive compared to the local market.",pricing
+"The price match policy worked perfectly, thank you.",pricing
+"I think the premium on these branded items is not justified.",pricing
+"The membership fee went up but the benefits stayed the same.",pricing
+"Prices on the website and in store never seem to match.",pricing
+"Bulk buying offers are really worth it.",pricing
+"A coffee here costs more than my lunch.",pricing
+"Prices are not displayed clearly on many shelves.",pricing
+"Reasonable prices for good quality, I will be back.",pricing
+"They keep raising prices but shrinking the packet size.",pricing
+"Great deals during the festive season.",pricing
+"The extended warranty is way too costly for what it covers.",pricing
+"Gift cards should not expire so quickly, it feels like a rip off.",pricing
+"Not cheap but the prices are consistent and honest.",pricing
+"The discount code did not work and nobody could explain why.",pricing
+"Too many items rose in price this month.",pricing
+"Happy with the offers on school supplies this week.",pricing
+"The price of petrol at your station is the highest in town.",pricing
+"I was surprised by how affordable the basics are here.",pricing
+"Delivery charge should be waived on orders above a certain amount.",pricing
+"The sale prices are only slightly lower than the usual prices, not a real deal.",pricing
+"For this price I expected a lot more.",pricing
+"The store was spotless and very well organised.",store_experience
+"Queues at the checkout were far too long on a Saturday.",store_experience
+"Parking is a nightmare, the lot is always full.",store_experience
+"It was freezing inside, the air conditioning was set way too low.",store_experience
+"The aisles are so narrow that a pram can barely get through.",store_experience
+"Music was way too loud, I could not hear myself think.",store_experience
+"The washrooms were dirty and had no soap.",store_experience
+"Only two checkouts open when the shop was packed.",store_experience
+"love the new layout, so easy to find things now",store_experience
+"The floor was wet with no warning sign near the entrance.",store_experience
+"The shop smells lovely and the displays are really inviting.",store_experience
+"Trolleys are broken and the wheels are stuck.",store_experience
+"Everything I wanted was out of stock again.",store_experience
+"Shelves were messy and items were scattered all over the floor.",store_experience
+"Self checkout machines kept freezing.",store_experience
+"The new cafe corner is a lovely addition.",store_experience
+"It was so crowded I left without buying anything.",store_experience
+"Lighting in the fitting rooms is awful and there is no mirror outside.",store_experience
+"The store opens too late on weekends.",store_experience
+"A clean and calm place to shop, very relaxing.",store_experience
+"Could you add more benches, my mother needs to rest while I shop.",store_experience
+"Signs are confusing and I could not find the exit.",store_experience
+"The entrance ramp is great for wheelchairs.",store_experience
+"Too hot inside during summer, felt stuffy.",store_experience
+"Nowhere to leave my bags before shopping.",store_experience
+"The queue management system with tokens is a great idea.",store_experience
+"Dust on the shelves and cobwebs in the corners.",store_experience
+"The trial rooms were locked and nobody had the key.",store_experience
+"The shop closes too early for people who work late.",store_experience
+"Enjoyed the festive decorations and the cheerful atmosphere.",store_experience
+"The store is hard to reach by public transport.",store_experience
+"There is no baby changing room anywhere.",store_experience
+"Fantastic selection and the shelves were neatly stocked.",store_experience
+"Long wait to get into the fitting rooms.",store_experience
+"The checkout area gets blocked because the bag counter is in the way.",store_experience
+"Lifts out of order again, tough for older customers.",store_experience
+"The floor had spilled juice for over an hour.",store_experience
+"This branch is clean, quiet and easy to navigate.",store_experience
+"Too many promotional stands blocking the walkways.",store_experience
+"Free water and clean seating area, thoughtful touch.",store_experience
