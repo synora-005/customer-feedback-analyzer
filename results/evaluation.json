@@ -1,0 +1,70 @@
+{
+  "examples": 30,
+  "correct": 27,
+  "accuracy": 0.9,
+  "chance": 0.2,
+  "per_label_accuracy": {
+    "product_issue": 1.0,
+    "staff_praise": 1.0,
+    "staff_complaint": 0.833,
+    "pricing": 1.0,
+    "store_experience": 0.667
+  },
+  "confusion": {
+    "product_issue": {
+      "product_issue": 6,
+      "staff_praise": 0,
+      "staff_complaint": 0,
+      "pricing": 0,
+      "store_experience": 0
+    },
+    "staff_praise": {
+      "product_issue": 0,
+      "staff_praise": 6,
+      "staff_complaint": 0,
+      "pricing": 0,
+      "store_experience": 0
+    },
+    "staff_complaint": {
+      "product_issue": 0,
+      "staff_praise": 1,
+      "staff_complaint": 5,
+      "pricing": 0,
+      "store_experience": 0
+    },
+    "pricing": {
+      "product_issue": 0,
+      "staff_praise": 0,
+      "staff_complaint": 0,
+      "pricing": 6,
+      "store_experience": 0
+    },
+    "store_experience": {
+      "product_issue": 1,
+      "staff_praise": 0,
+      "staff_complaint": 0,
+      "pricing": 1,
+      "store_experience": 4
+    }
+  },
+  "mistakes": [
+    {
+      "comment": "Everything I wanted was out of stock again.",
+      "real": "store_experience",
+      "said": "pricing",
+      "confidence": 0.399
+    },
+    {
+      "comment": "Trolleys are broken and the wheels are stuck.",
+      "real": "store_experience",
+      "said": "product_issue",
+      "confidence": 0.947
+    },
+    {
+      "comment": "Security followed me around the shop like I was a thief.",
+      "real": "staff_complaint",
+      "said": "staff_praise",
+      "confidence": 0.99
+    }
+  ]
+}

@@ -253,8 +253,68 @@ def save_classifier(model, tokenizer, path=MODEL_DIR):
 
 # --- Milestone 4: Implement an inference function to classify new feedback.
 # Hint: Develop an inference pipeline to classify new feedback using your fine-tuned model.
-def milestone_4():  # TODO(milestone 4)
-    raise NotImplementedError("TODO(milestone 4)")
+def load_classifier(path=MODEL_DIR):
+    """Load the model and tokenizer saved by save_classifier. Returns the tokenizer and the model."""
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained(path)
+    model = AutoModelForCausalLM.from_pretrained(path)
+    model.eval()
+    return tokenizer, model
+
+
+def predict_label(comment, model, tokenizer, max_comment_tokens=60):
+    """Classify one comment.
+
+    Reads the model's scores for the five category tokens only (the model could in theory answer
+    with any word, but a label must be one of the categories) and turns them into probabilities.
+    Returns {"label": best category, "confidence": its probability, "scores": probability of each}.
+    """
+    import torch
+    if not comment or not comment.strip():
+        raise ValueError("the comment is empty")
+    prompt = encode_prompt(" ".join(comment.split()), tokenizer, max_comment_tokens)
+    category_ids = [tokenizer.convert_tokens_to_ids(label_token(c)) for c in CATEGORIES]
+
+    was_training = model.training
+    model.eval()
+    device = next(model.parameters()).device
+    with torch.no_grad():
+        logits = model(input_ids=torch.tensor([prompt], device=device)).logits[0, -1]
+    if was_training:
+        model.train()
+
+    probabilities = torch.softmax(logits[category_ids], dim=-1).tolist()
+    scores = dict(zip(CATEGORIES, probabilities))
+    best = max(scores, key=scores.get)
+    return {"label": best, "confidence": scores[best], "scores": scores}
+
+
+def evaluate_classifier(examples, model, tokenizer):
+    """Score the model on labelled examples (use the test set, once, at the end).
+
+    Returns the accuracy, the accuracy per category, a confusion table (real label -> what the
+    model said) and the list of mistakes.
+    """
+    confusion = {real: {said: 0 for said in CATEGORIES} for real in CATEGORIES}
+    mistakes = []
+    for example in examples:
+        result = predict_label(example["comment"], model, tokenizer)
+        confusion[example["label"]][result["label"]] += 1
+        if result["label"] != example["label"]:
+            mistakes.append({"comment": example["comment"], "real": example["label"],
+                             "said": result["label"], "confidence": round(result["confidence"], 3)})
+    total = len(examples)
+    correct = total - len(mistakes)
+    per_label = {}
+    for label in CATEGORIES:
+        count = sum(confusion[label].values())
+        per_label[label] = round(confusion[label][label] / count, 3) if count else None
+    return {
+        "examples": total, "correct": correct,
+        "accuracy": round(correct / total, 3) if total else 0.0,
+        "chance": round(1 / len(CATEGORIES), 3),
+        "per_label_accuracy": per_label, "confusion": confusion, "mistakes": mistakes,
+    }
 
 
 # --- Milestone 5: Build a simple Streamlit app to input comments and show classifications.

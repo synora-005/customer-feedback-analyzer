@@ -13,10 +13,13 @@ from app.core import (
     dataset_stats,
     encode_example,
     encode_prompt,
+    evaluate_classifier,
     label_accuracy,
     label_token,
+    load_classifier,
     load_feedback,
     pad_batch,
+    predict_label,
     save_classifier,
     split_dataset,
     train_classifier,
@@ -219,9 +222,35 @@ def test_milestone_3(tokenizer, tmp_path):
 
 
 # Milestone 4: Implement an inference function to classify new feedback.
-@pytest.mark.skip(reason="remove this line when you start milestone 4")
-def test_milestone_4():
-    raise NotImplementedError("write the test for milestone 4")
+def test_milestone_4(tokenizer, tmp_path):
+    model = tiny_gpt2()                                  # untrained: we test the plumbing, not the accuracy
+    add_category_tokens(tokenizer, model)
+
+    result = predict_label("The cashier was so friendly", model, tokenizer)
+    assert result["label"] in CATEGORIES
+    assert set(result["scores"]) == set(CATEGORIES)
+    assert abs(sum(result["scores"].values()) - 1.0) < 1e-5          # probabilities of the five categories
+    assert result["confidence"] == max(result["scores"].values()) == result["scores"][result["label"]]
+    assert predict_label("The cashier was so friendly", model, tokenizer) == result   # same answer every time
+
+    for empty in ["", "   "]:
+        with pytest.raises(ValueError):
+            predict_label(empty, model, tokenizer)
+
+    examples = [{"comment": f"{label} comment {i}", "label": label} for label in CATEGORIES for i in range(3)]
+    report = evaluate_classifier(examples, model, tokenizer)
+    assert report["examples"] == 15
+    assert report["correct"] + len(report["mistakes"]) == 15
+    assert report["accuracy"] == round(report["correct"] / 15, 3)
+    assert sum(sum(row.values()) for row in report["confusion"].values()) == 15
+    assert report["chance"] == 0.2
+
+    # a saved model gives the same answer when loaded again
+    save_classifier(model, tokenizer, str(tmp_path / "saved"))
+    loaded_tokenizer, loaded_model = load_classifier(str(tmp_path / "saved"))
+    again = predict_label("The cashier was so friendly", loaded_model, loaded_tokenizer)
+    assert again["label"] == result["label"]
+    assert abs(again["confidence"] - result["confidence"]) < 1e-4
 
 
 # Milestone 5: Build a simple Streamlit app to input comments and show classifications.
