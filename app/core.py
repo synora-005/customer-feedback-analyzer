@@ -93,6 +93,16 @@ def load_gpt2(name="gpt2"):
     return tokenizer, model
 
 
+def _start_from_words(tokenizer, model):
+    """Start each category token at the average embedding of the words in its name, e.g. 'staff praise'."""
+    import torch
+    weight = model.get_input_embeddings().weight
+    with torch.no_grad():
+        for category in CATEGORIES:
+            word_ids = tokenizer(" " + category.replace("_", " "))["input_ids"]
+            weight[tokenizer.convert_tokens_to_ids(label_token(category))] = weight[word_ids].mean(dim=0)
+
+
 def add_category_tokens(tokenizer, model):
     """Teach the tokenizer and the model the category tokens, plus a padding token.
 
@@ -104,6 +114,8 @@ def add_category_tokens(tokenizer, model):
     if model.get_input_embeddings().num_embeddings != len(tokenizer):
         model.resize_token_embeddings(len(tokenizer))   # one new row of numbers per new token
     model.config.pad_token_id = tokenizer.pad_token_id
+    if added:
+        _start_from_words(tokenizer, model)        # a meaningful starting point instead of random numbers
     return added
 
 
@@ -169,24 +181,45 @@ def label_accuracy(predictions, labels):
     return float((guessed[counted] == wanted[counted]).mean())
 
 
-def _most_likely_token(logits, labels):
-    """Keep only the best token at each position, so evaluation does not store 50,000 scores per position."""
-    if isinstance(logits, tuple):
-        logits = logits[0]
-    return logits.argmax(dim=-1)
-
 
 def _compute_metrics(eval_prediction):
     return {"accuracy": label_accuracy(eval_prediction.predictions, eval_prediction.label_ids)}
 
 
 def train_classifier(model, tokenizer, train, val=None, output_dir="data/trainer_tmp",
-                     epochs=5, lr=1e-4, batch_size=8, seed=0, logging_steps=5):
-    """Fine-tune with the Hugging Face Trainer. Returns the loss and accuracy after each log step or epoch."""
+                     epochs=10, lr=5e-5, batch_size=8, seed=0, logging_steps=5):
+    """Fine-tune with the Hugging Face Trainer. Returns the loss and accuracy after each log step or epoch.
+
+    The loss compares only the five category tokens with each other, so the model spends its effort
+    on telling the categories apart instead of on ignoring the other 50,000 words.
+    """
+    import torch
+    import torch.nn.functional as F
     from functools import partial
     from transformers import Trainer, TrainingArguments, set_seed
 
     set_seed(seed)
+    category_ids = torch.tensor([tokenizer.convert_tokens_to_ids(label_token(c)) for c in CATEGORIES])
+
+    class ClassifierTrainer(Trainer):
+        def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+            labels = inputs["labels"]
+            outputs = model(**{key: value for key, value in inputs.items() if key != "labels"})
+            ids = category_ids.to(outputs.logits.device)
+            targets = labels[:, 1:]                                  # the prediction at i is for i + 1
+            wanted = targets != -100
+            scores = outputs.logits[:, :-1][wanted][:, ids]          # one score per category
+            answer = (targets[wanted].unsqueeze(1) == ids.unsqueeze(0)).long().argmax(dim=1)
+            loss = F.cross_entropy(scores, answer)
+            return (loss, outputs) if return_outputs else loss
+
+    def best_category(logits, labels):
+        """At every position, the category token with the highest score (so only categories can be 'predicted')."""
+        if isinstance(logits, tuple):
+            logits = logits[0]
+        ids = category_ids.to(logits.device)
+        return ids[logits[..., ids].argmax(dim=-1)]
+
     train_data = make_dataset(train, tokenizer)
     val_data = make_dataset(val, tokenizer) if val else None
     arguments = TrainingArguments(
@@ -196,11 +229,11 @@ def train_classifier(model, tokenizer, train, val=None, output_dir="data/trainer
         logging_steps=logging_steps, report_to="none", seed=seed,
         remove_unused_columns=False,                      # our examples are plain dictionaries
     )
-    trainer = Trainer(
+    trainer = ClassifierTrainer(
         model=model, args=arguments, train_dataset=train_data, eval_dataset=val_data,
         data_collator=partial(pad_batch, pad_id=tokenizer.pad_token_id),
         compute_metrics=_compute_metrics if val_data else None,
-        preprocess_logits_for_metrics=_most_likely_token if val_data else None,
+        preprocess_logits_for_metrics=best_category if val_data else None,
     )
     trainer.train()
     log = trainer.state.log_history

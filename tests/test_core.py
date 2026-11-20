@@ -165,6 +165,14 @@ def test_milestone_2_encoding(tokenizer):
         encode_example("x", "refunds", tokenizer)
 
 
+def test_milestone_2_tokens_start_from_their_words(tokenizer):
+    model = tiny_gpt2()
+    add_category_tokens(tokenizer, model)
+    weight = model.get_input_embeddings().weight
+    word_ids = tokenizer(" staff praise")["input_ids"]
+    token_id = tokenizer.convert_tokens_to_ids("<staff_praise>")
+    assert torch.allclose(weight[token_id], weight[word_ids].mean(dim=0), atol=1e-6)
+
 # Milestone 3: Fine-tune the model using the Hugging Face Trainer.
 def test_milestone_3_padding():
     batch = pad_batch([
